@@ -1,0 +1,75 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+import codecs
+
+# import streamlit.components
+import streamlit.components.v1 as components
+from pandas_profiling import ProfileReport
+from streamlit_pandas_profiling import st_profile_report
+
+# Custome Component Fxn
+import sweetviz as sv
+
+def st_display_sweetviz(report_html, width=1000, height=500):
+    report_file = codecs.open(report_html, 'r')
+    page = report_file.read()
+    components.html(page,width=width, height=height,scrolling=True)
+
+
+footer_html = """
+
+"""
+# @st.cache
+def main():
+    menu = ["home", "Pandas Profile","Sweetviz","About"]
+    choice = st.sidebar.selectbox("Menu", menu)
+
+    if choice == "Pandas Profile":
+        st.subheader("Automated EDA with Pandas Profile")
+        data_file = st.file_uploader("Upload CSV")
+        if data_file is not None:
+            df = pd.read_csv(data_file)
+            st.dataframe(df.head())
+            profile = ProfileReport(df)
+            st_profile_report(profile)
+
+    elif choice == "Sweetviz":
+        st.subheader("Automated EDA with Sweetviz")
+        data_file = st.file_uploader("Upload CSV")
+        if data_file is not None:
+            df = pd.read_csv(data_file)
+            st.dataframe(df.head())
+            if st.button("Generate Sweetviz Report"):
+                # Normal Workflow
+                report = sv.analyze(df)
+                report.show_html()
+                st_display_sweetviz("SWEETVIZ_REPORT.html")
+
+
+    elif choice == "About":
+        st.subheader("About App")
+        # components.iframe('https://google.com')
+        components.html(footer_html, height=500)
+
+    else:
+        # st.subheader("Home")
+        html_temp = """
+        <div style="background-color: rgb(255, 204, 0);padding:10px;border-radius:10px">
+        <img=''>
+        <h1 style="color:white;text-align:center;">Homecc
+        <h2 style="color:white;text-align:center;">Machine Learning Program 
+        </div>
+        """
+        # components.html("<p style='color:red;'>Streamlit Component is Awesome</p>")
+        components.html(html_temp)
+
+        from PIL import Image
+        image = Image.open('C:/ai.jpg')
+
+        st.image(image, caption='Machine Learning')
+
+
+
+if __name__ == '__main__':
+    main()
